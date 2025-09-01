@@ -93,7 +93,7 @@ impl Interval {
         }
     }
     /// computes the trigonometric quadrants occupied by the bounds of the interval
-    #[inline]
+    // #[inline]
     fn quadrants(self) -> (u8, u8) {
         // std::f32::consts::PI == 3.141592741...
         //       PI.next_down() == 3.141592502...
@@ -134,7 +134,7 @@ impl Interval {
         (lower_quadrant, upper_quadrant)
     }
     /// Computes the sine of the interval
-    #[inline]
+    // #[inline]
     pub fn sin(self) -> Self {
         if self.has_nan() {
             f32::NAN.into()
@@ -178,7 +178,7 @@ impl Interval {
         }
     }
     /// Computes the cosine of the interval
-    #[inline]
+    // #[inline]
     pub fn cos(self) -> Self {
         if self.has_nan() {
             f32::NAN.into()
