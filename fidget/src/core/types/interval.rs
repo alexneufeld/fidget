@@ -115,7 +115,7 @@ impl Interval {
                 1
             }
         } else {
-            (((x2 / PI).floor() as u32) % 4) as u8
+            (x2 / PI).floor().rem_euclid(4.0) as u8
         };
         let y2 = 2.0 * self.upper;
         let upper_quadrant = if self.upper.abs() <= pi_lower {
@@ -129,7 +129,7 @@ impl Interval {
                 1
             }
         } else {
-            (((y2 / PI).floor() as u32) % 4) as u8
+            (y2 / PI).floor().rem_euclid(4.0) as u8
         };
         (lower_quadrant, upper_quadrant)
     }
