@@ -1542,6 +1542,17 @@ impl Context {
         assert_eq!(stack.len(), 1);
         Ok(stack.pop().unwrap())
     }
+
+    // pub fn gauss_curv(&mut self, n: Node, vx: Var, vy: Var, vz: Var) -> Result<Node, Error> {
+    //     let dx = self.deriv(n, vx)?;
+    //     let d2x = self.deriv(dx, vx)?;
+    //     let dy = self.deriv(n, vy)?;
+    //     let d2y = self.deriv(dy, vy)?;
+    //     let dz = self.deriv(n, vz)?;
+    //     let d2z = self.deriv(dz, vz)?;
+    //     let ret = self.neg(1.0);
+    //     Ok(ret)
+    // }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -303,6 +303,37 @@ impl Tree {
         ctx.deriv(node, v).and_then(|d| ctx.export(d)).unwrap()
     }
 
+    /// get the symbolic expression for the Gaussian curvature of this tree
+    pub fn gauss_curv(&self) -> Tree {
+        let dx = self.deriv(Var::X);
+        let d2x = dx.deriv(Var::X);
+        let dy = self.deriv(Var::Y);
+        let d2y = dy.deriv(Var::Y);
+        let dz = self.deriv(Var::Z);
+        let d2z = dz.deriv(Var::Z);
+        let dxy = dx.deriv(Var::Y);
+        let dxz = dx.deriv(Var::Z);
+        let dyz = dy.deriv(Var::Z);
+        let gradient_sum = dx.square() + dy.square() + dz.square();
+        // determinant of a 4x4 symmetric matrix
+        // https://math.stackexchange.com/a/4197987
+        let det = 2.0
+            * (d2x.clone() * dyz.clone() * dy.clone() * dz.clone()
+                + d2y.clone() * dxz.clone() * dx.clone() * dz.clone()
+                + d2z.clone() * dxy.clone() * dx.clone() * dy.clone())
+            - (d2x.clone() * d2y.clone() * dz.clone().square()
+                + d2x.clone() * d2z.clone() * dy.clone().square()
+                + d2y.clone() * d2z.clone() * dx.clone().square())
+            - 2.0
+                * (dxy.clone() * dyz.clone() * dz.clone() * dx.clone()
+                    + dxy.clone() * dxz.clone() * dy.clone() * dz.clone()
+                    + dxz.clone() * dy.clone() * dyz.clone() * dx.clone())
+            + (dxy.clone() * dz.clone()).square()
+            + (dxz.clone() * dy.clone()).square()
+            + (dx.clone() * dyz.clone()).square();
+        -1.0 / gradient_sum.square() * det
+    }
+
     /// Raises this tree to the power of an integer using exponentiation by squaring
     pub fn pow(&self, mut n: i64) -> Self {
         // TODO should this also be in `Context`?
@@ -789,6 +820,18 @@ mod test {
         ctx.clear();
         let root = ctx.import(&d);
         assert_eq!(ctx.get_const(root).unwrap(), 1.0);
+    }
+
+    #[test]
+    fn tree_gauss_curv() {
+        let x = Tree::x();
+        let y = Tree::y();
+        let z = Tree::z();
+        let sphere = (x.square() + y.square() + z.square()).sqrt() - 2.0;
+        let curv = sphere.gauss_curv();
+        let mut ctx = Context::new();
+        let root = ctx.import(&curv);
+        assert_eq!(ctx.eval_xyz(root, 2.0, 0.0, 0.0).unwrap(), 0.25);
     }
 
     #[test]

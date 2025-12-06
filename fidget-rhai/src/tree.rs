@@ -116,6 +116,7 @@ pub fn register(engine: &mut rhai::Engine) {
     register_unary_fns!("ceil", ceil, engine);
     register_unary_fns!("floor", floor, engine);
     register_unary_fns!("round", round, engine);
+    register_unary_fns!("gauss_curv", gauss_curv, engine);
     register_unary_fns!("-", neg, engine);
 
     // Ban comparison operators
@@ -234,6 +235,8 @@ define_unary_fns!(abs);
 define_unary_fns!(floor);
 define_unary_fns!(ceil);
 define_unary_fns!(round);
+define_unary_fns!(gauss_curv);
+
 
 #[cfg(test)]
 mod test {
