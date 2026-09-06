@@ -615,6 +615,30 @@ impl Interval {
         }
     }
 
+    /// Hypotenuse of a right triangle given it's side lengths
+    pub fn hypot(self: Interval, rhs: Interval) -> Interval {
+        if self.has_nan() || rhs.has_nan() {
+            f32::NAN.into()
+        } else {
+            let self_lower = if self.contains(0.0) {
+                0.0
+            } else {
+                self.lower().abs().min(self.upper().abs())
+            };
+            let self_upper = self.lower().abs().max(self.upper().abs());
+            let rhs_lower = if rhs.contains(0.0) {
+                0.0
+            } else {
+                rhs.lower().abs().min(rhs.upper().abs())
+            };
+            let rhs_upper = rhs.lower.abs().max(rhs.upper().abs());
+            Interval::new(
+                self_lower.hypot(rhs_lower),
+                self_upper.hypot(rhs_upper),
+            )
+        }
+    }
+
     /// Pseudo-random number generation
     pub fn rand(&self) -> Interval {
         // We'll treat NANs as mystery values here, instead of as valid bitwise

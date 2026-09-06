@@ -217,6 +217,35 @@ impl Assembler for FloatSliceAssembler {
             ; vpxor   Ry(reg(out_reg)), ymm1, ymm3
         );
     }
+    /*
+    fn build_hypot(&mut self, out_reg: u8, lhs_reg: u8, rhs_reg: u8) {
+        dynasm!(self.0.ops
+        ; vpcmpeqw ymm2, ymm2, ymm2 // make ymm2 a mask of all ones
+        ; vpsrld ymm1, ymm2, 1 // make ymm 1 a mask to clear only the the sign bit
+        ; vpand ymm0, ymm1, Ry(reg(lhs_reg)) // ymm0 now has abs(lhs)
+        ; vpand ymm1, ymm1, Ry(reg(rhs_reg)) // ymm1 now has abs(rhs)
+        ; vminps ymm3, ymm0, ymm1 //ymm3=min(ax,ay)
+        ; vmaxps ymm1, ymm0, ymm1 // ymm1 = max(ax,ay)
+        ; vdivps ymm0, ymm3, ymm1 // ymm0 = min/max - not correct for max=0
+        // Build [1.0 x 8] in ymm2
+        ; vpslld ymm2, ymm2, 25
+        ; vpsrld ymm2, ymm2, 2
+        ; vfmadd132ps ymm0, ymm2, ymm0 // 1.0 + ymm0^2
+        ; vsqrtps ymm0,  ymm0
+        ; vmulps Ry(reg(out_reg)), ymm0, ymm1
+        )
+    }
+    */
+    fn build_hypot(&mut self, out_reg: u8, lhs_reg: u8, rhs_reg: u8) {
+        dynasm!(self.0.ops
+            ; vmulps ymm0, Ry(reg(lhs_reg)), Ry(reg(lhs_reg))
+            ; vmulps ymm1, Ry(reg(rhs_reg)), Ry(reg(rhs_reg))
+            // unlike a real hypot implementation, this intermediate add can cause +inf results
+            ; vaddps ymm2, ymm0, ymm1
+            ; vsqrtps Ry(reg(out_reg)), ymm2
+        );
+    }
+
     fn build_exp(&mut self, out_reg: u8, lhs_reg: u8) {
         extern "sysv64" fn float_exp(f: f32) -> f32 {
             f.exp()

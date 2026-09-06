@@ -225,6 +225,27 @@ impl<F: Function + MathFunction> TestGradSlice<F> {
         );
     }
 
+    pub fn test_g_hypot() {
+        let mut ctx = Context::new();
+        let x = ctx.x();
+        let y = ctx.y();
+        let z = ctx.z();
+        let xy = ctx.hypot(x, y).unwrap();
+        let s = ctx.hypot(xy, z).unwrap();
+        let shape = F::new(&ctx, &[s]).unwrap();
+
+        let tape = shape.grad_slice_tape(Default::default());
+        assert_eq!(
+            Self::eval_xyz(&tape, &[1.0], &[0.0], &[0.0])[0],
+                   Grad::new(1.0, 1.0, 0.0, 0.0)
+        );
+        assert_eq!(
+            Self::eval_xyz(&tape, &[1.0], &[1.0], &[1.0])[0],
+                   Grad::new(3_f32.sqrt(), 3_f32.sqrt()/3.0, 3_f32.sqrt()/3.0, 3_f32.sqrt()/3.0)
+        );
+
+    }
+
     pub fn test_g_min() {
         let mut ctx = Context::new();
         let x = ctx.x();
@@ -810,6 +831,7 @@ macro_rules! grad_slice_tests {
         $crate::grad_test!(test_g_not, $t);
         $crate::grad_test!(test_g_div, $t);
         $crate::grad_test!(test_g_recip, $t);
+        $crate::grad_test!(test_g_hypot, $t);
         $crate::grad_test!(test_g_stress, $t);
 
         mod g_unary {

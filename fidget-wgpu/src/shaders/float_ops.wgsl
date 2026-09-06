@@ -34,6 +34,10 @@ fn op_floor(lhs: Value) -> Value {
     return Value(floor(lhs.v));
 }
 
+fn op_hypot(lhs: Value, rhs: Value) -> Value {
+    return Value(length(vec2<f32>(lhs.v, rhs.v)));
+}
+
 fn op_log(lhs: Value) -> Value {
     return Value(log(lhs.v));
 }

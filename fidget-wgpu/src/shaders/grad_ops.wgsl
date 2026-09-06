@@ -106,6 +106,15 @@ fn op_mix(lhs: Value, rhs: Value) -> Value {
     return Value(vec4f(0.0, 0.0, 0.0, v));
 }
 
+fn op_hypot(lhs: Value, rhs: Value) -> Value {
+
+    let hyp = length(vec2<f32>(lhs.v.w, rhs.v.w));
+    return Value(vec4f(
+        (lhs.v.w*lhs.v.xyz + rhs.v.w*lhs.v.xyz)/hyp,
+        hyp
+    ));
+}
+
 fn op_and(lhs: Value, rhs: Value, stack: ptr<function, Stack>) -> Value {
     if lhs.v.w == 0.0 {
         return lhs;

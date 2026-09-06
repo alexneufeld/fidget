@@ -281,6 +281,31 @@ where
         );
     }
 
+
+    pub fn test_i_hypot() {
+        let mut ctx = Context::new();
+        let x = ctx.x();
+        let y = ctx.y();
+        let hypot_xy = ctx.hypot(x, y).unwrap();
+
+        let shape = F::new(&ctx, &[hypot_xy]).unwrap();
+        let tape = shape.interval_tape(Default::default());
+        let mut eval = F::new_interval_eval();
+        assert_eq!(
+            eval.eval(&tape, &[[0.0, 1.0].into(), [0.0, 1.0].into()]).unwrap().0[0],
+                   [0.0, 2_f32.sqrt()].into()
+        );
+        assert_eq!(
+            eval.eval(&tape, &[[-3.0, 1.0].into(), [-2.0, 4.0].into()]).unwrap().0[0],
+                   [0.0, 5.0].into()
+        );
+        assert_eq!(
+            eval.eval(&tape, &[[-5.0, -3.0].into(), [0.0, 0.0].into()]).unwrap().0[0],
+                   [3.0, 5.0].into()
+        );
+        assert!(eval.eval(&tape, &[[-5.0, -3.0].into(), Interval::from(f32::NAN)]).unwrap().0[0].has_nan())
+    }
+
     pub fn test_i_square() {
         let mut ctx = Context::new();
         let x = ctx.x();
@@ -1342,6 +1367,7 @@ macro_rules! interval_tests {
         $crate::interval_test!(test_i_add_abs, $t);
         $crate::interval_test!(test_i_sqrt, $t);
         $crate::interval_test!(test_i_mix, $t);
+        $crate::interval_test!(test_i_hypot, $t);
         $crate::interval_test!(test_i_rand, $t);
         $crate::interval_test!(test_i_square, $t);
         $crate::interval_test!(test_i_sin, $t);

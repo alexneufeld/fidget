@@ -45,6 +45,7 @@ pub enum BinaryOpcode {
     And,
     Or,
     Mix,
+    Hypot,
 }
 
 impl BinaryOpcode {
@@ -63,6 +64,7 @@ impl BinaryOpcode {
             BinaryOpcode::And => a.and_choice(b).0,
             BinaryOpcode::Or => a.or_choice(b).0,
             BinaryOpcode::Mix => a.mix(b),
+            BinaryOpcode::Hypot => a.hypot(b),
         }
     }
 }

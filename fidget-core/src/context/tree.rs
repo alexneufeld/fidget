@@ -406,6 +406,9 @@ impl Tree {
     pub fn mix<T: Into<Tree>>(&self, other: T) -> Self {
         Self::op_binary(self.clone(), other.into(), BinaryOpcode::Mix)
     }
+    pub fn hypot<T: Into<Tree>>(&self, other: T) -> Self {
+        Self::op_binary(self.clone(), other.into(), BinaryOpcode::Hypot)
+    }
     pub fn modulo<T: Into<Tree>>(&self, other: T) -> Self {
         Self::op_binary(self.clone(), other.into(), BinaryOpcode::Mod)
     }

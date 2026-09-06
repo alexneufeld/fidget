@@ -276,6 +276,7 @@ impl<const N: usize> VmData<N> {
                 | SsaOp::AtanRegReg(index, lhs, rhs)
                 | SsaOp::CompareRegReg(index, lhs, rhs)
                 | SsaOp::MixRegReg(index, lhs, rhs)
+                | SsaOp::HypotRegReg(index, lhs, rhs)
                 | SsaOp::ModRegReg(index, lhs, rhs) => {
                     *index = new_index;
                     *lhs = workspace.get_or_insert_active(*lhs);
@@ -293,6 +294,8 @@ impl<const N: usize> VmData<N> {
                 | SsaOp::CompareImmReg(index, arg, _imm)
                 | SsaOp::MixRegImm(index, arg, _imm)
                 | SsaOp::MixImmReg(index, arg, _imm)
+                | SsaOp::HypotRegImm(index, arg, _imm)
+                | SsaOp::HypotImmReg(index, arg, _imm)
                 | SsaOp::ModRegImm(index, arg, _imm)
                 | SsaOp::ModImmReg(index, arg, _imm) => {
                     *index = new_index;

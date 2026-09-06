@@ -70,3 +70,7 @@ fn rand(seed: u32) -> f32 {
 fn mix(a: u32, b: u32) -> u32 {
     return hash(a + hash(b));
 }
+
+fn hypot(lhs: f32, rhs: f32) -> f32 {
+    return length(vec2<f32>(lhs, rhs));
+}

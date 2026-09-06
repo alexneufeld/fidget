@@ -502,7 +502,15 @@ impl<const N: usize> TracingEvaluator for VmIntervalEval<N> {
                 RegOp::MixImmReg(out, arg, imm) => {
                     v[out] = Interval::from(imm).mix(v[arg]);
                 }
-
+                RegOp::HypotRegReg(out, lhs, rhs) => {
+                    v[out] = v[lhs].hypot(v[rhs]);
+                }
+                RegOp::HypotRegImm(out, arg, imm) => {
+                    v[out] = v[arg].hypot(imm.into());
+                }
+                RegOp::HypotImmReg(out, arg, imm) => {
+                    v[out] = Interval::from(imm).hypot(v[arg]);
+                }
                 RegOp::MinRegReg(out, lhs, rhs) => {
                     let (value, choice) = v[lhs].min_choice(v[rhs]);
                     v[out] = value;
@@ -709,6 +717,15 @@ impl<const N: usize> TracingEvaluator for VmPointEval<N> {
                 }
                 RegOp::MixImmReg(out, arg, imm) => {
                     v[out] = imm.mix(v[arg]);
+                }
+                RegOp::HypotRegReg(out, lhs, rhs) => {
+                    v[out] = v[lhs].hypot(v[rhs]);
+                }
+                RegOp::HypotRegImm(out, arg, imm) => {
+                    v[out] = v[arg].hypot(imm);
+                }
+                RegOp::HypotImmReg(out, arg, imm) => {
+                    v[out] = imm.hypot(v[arg]);
                 }
                 RegOp::SubRegReg(out, lhs, rhs) => {
                     v[out] = v[lhs] - v[rhs];
@@ -982,6 +999,21 @@ impl<const N: usize> BulkEvaluator for VmFloatSliceEval<N> {
                 RegOp::MixImmReg(out, arg, imm) => {
                     for i in 0..size {
                         v[out][i] = imm.mix(v[arg][i]);
+                    }
+                }
+                RegOp::HypotRegReg(out, lhs, rhs) => {
+                    for i in 0..size {
+                        v[out][i] = v[lhs][i].hypot(v[rhs][i]);
+                    }
+                }
+                RegOp::HypotRegImm(out, arg, imm) => {
+                    for i in 0..size {
+                        v[out][i] = v[arg][i].hypot(imm);
+                    }
+                }
+                RegOp::HypotImmReg(out, arg, imm) => {
+                    for i in 0..size {
+                        v[out][i] = imm.hypot(v[arg][i]);
                     }
                 }
                 RegOp::MinRegImm(out, arg, imm) => {
@@ -1282,6 +1314,23 @@ impl<const N: usize> BulkEvaluator for VmGradSliceEval<N> {
                     let imm = Grad::from(imm);
                     for i in 0..size {
                         v[out][i] = imm.mix(v[arg][i]);
+                    }
+                }
+                RegOp::HypotRegReg(out, lhs, rhs) => {
+                    for i in 0..size {
+                        v[out][i] = v[lhs][i].hypot(v[rhs][i]);
+                    }
+                }
+                RegOp::HypotRegImm(out, arg, imm) => {
+                    let imm = imm.into();
+                    for i in 0..size {
+                        v[out][i] = v[arg][i].hypot(imm);
+                    }
+                }
+                RegOp::HypotImmReg(out, arg, imm) => {
+                    let imm = Grad::from(imm);
+                    for i in 0..size {
+                        v[out][i] = imm.hypot(v[arg][i]);
                     }
                 }
                 RegOp::CompareRegImm(out, arg, imm) => {

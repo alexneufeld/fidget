@@ -621,6 +621,16 @@ impl Assembler for IntervalAssembler {
         self.0.ops.commit_local().unwrap();
     }
 
+    fn build_hypot(&mut self, out_reg: u8, lhs_reg: u8, rhs_reg: u8) {
+        extern "sysv64" fn interval_hypot(
+            lhs: Interval,
+            rhs: Interval,
+        ) -> Interval {
+            lhs.hypot(rhs)
+        }
+        self.call_fn_binary(out_reg, lhs_reg, rhs_reg, interval_hypot);
+    }
+
     fn build_rand(&mut self, out_reg: u8, arg_reg: u8) {
         dynasm!(self.0.ops
             // check that arg.lower.to_bits() == arg.upper.to_bits()

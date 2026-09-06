@@ -94,6 +94,8 @@ macro_rules! opcodes {
             CompareRegImm($t, $t, f32),
             #[doc = "Pseudo-random mixing of a register with an immediate"]
             MixRegImm($t, $t, f32),
+            #[doc = "Compute the hypotenuse of a right triangle from a register and immediate side length"]
+            HypotRegImm($t, $t, f32),
 
             // RegImm opcodes (with a choice)
             #[doc = "Compute the minimum of a register and an immediate"]
@@ -114,6 +116,8 @@ macro_rules! opcodes {
             CompareImmReg($t, $t, f32),
             #[doc = "Pseudo-random mixing of an immediate and a register"]
             MixImmReg($t, $t, f32),
+            #[doc = "Compute the hypotenuse of a right triangle from an immediate and a register side length"]
+            HypotImmReg($t, $t, f32),
 
             // RegReg opcodes (without a choice)
             #[doc = "Add two registers"]
@@ -130,6 +134,8 @@ macro_rules! opcodes {
             AtanRegReg($t, $t, $t),
             #[doc = "Pseudo-random mixing of two registers"]
             MixRegReg($t, $t, $t),
+            #[doc = "Compute the hypotenuse of a right triangle from two register side lengths"]
+            HypotRegReg($t, $t, $t),
 
             // RegReg opcodes (with a choice)
             #[doc = "Take the minimum of two registers"]
@@ -218,7 +224,10 @@ impl SsaOp {
             | SsaOp::AndRegImm(out, ..)
             | SsaOp::AndRegReg(out, ..)
             | SsaOp::OrRegImm(out, ..)
-            | SsaOp::OrRegReg(out, ..) => Some(*out),
+            | SsaOp::OrRegReg(out, ..)
+            | SsaOp::HypotRegReg(out, ..)
+            | SsaOp::HypotRegImm(out, ..)
+            | SsaOp::HypotImmReg(out, ..) => Some(*out),
             SsaOp::Output(..) => None,
         }
     }
@@ -268,7 +277,10 @@ impl SsaOp {
             | SsaOp::MixImmReg(..)
             | SsaOp::ModRegReg(..)
             | SsaOp::ModRegImm(..)
-            | SsaOp::ModImmReg(..) => false,
+            | SsaOp::ModImmReg(..)
+            | SsaOp::HypotRegReg(..)
+            | SsaOp::HypotRegImm(..)
+            | SsaOp::HypotImmReg(..) => false,
             SsaOp::MinRegImm(..)
             | SsaOp::MaxRegImm(..)
             | SsaOp::MinRegReg(..)
@@ -354,7 +366,9 @@ impl RegOp {
             | RegOp::ModRegImm(out, arg, imm)
             | RegOp::ModImmReg(out, arg, imm)
             | RegOp::AndRegImm(out, arg, imm)
-            | RegOp::OrRegImm(out, arg, imm) => {
+            | RegOp::OrRegImm(out, arg, imm)
+            | RegOp::HypotRegImm(out, arg, imm)
+            | RegOp::HypotImmReg(out, arg, imm) => {
                 let _: f32 = *imm; // type-checking pattern
                 f(out);
                 f(arg);
@@ -371,7 +385,8 @@ impl RegOp {
             | RegOp::MixRegReg(out, lhs, rhs)
             | RegOp::ModRegReg(out, lhs, rhs)
             | RegOp::AndRegReg(out, lhs, rhs)
-            | RegOp::OrRegReg(out, lhs, rhs) => {
+            | RegOp::OrRegReg(out, lhs, rhs)
+            | RegOp::HypotRegReg(out, lhs, rhs) => {
                 f(out);
                 f(lhs);
                 f(rhs);
@@ -435,7 +450,9 @@ impl RegOp {
             | RegOp::ModRegImm(out, arg, imm)
             | RegOp::ModImmReg(out, arg, imm)
             | RegOp::AndRegImm(out, arg, imm)
-            | RegOp::OrRegImm(out, arg, imm) => {
+            | RegOp::OrRegImm(out, arg, imm)
+            | RegOp::HypotRegImm(out, arg, imm)
+            | RegOp::HypotImmReg(out, arg, imm) => {
                 let _: f32 = *imm; // type-checking pattern
                 f(*out);
                 f(*arg);
@@ -452,7 +469,8 @@ impl RegOp {
             | RegOp::MixRegReg(out, lhs, rhs)
             | RegOp::ModRegReg(out, lhs, rhs)
             | RegOp::AndRegReg(out, lhs, rhs)
-            | RegOp::OrRegReg(out, lhs, rhs) => {
+            | RegOp::OrRegReg(out, lhs, rhs)
+            | RegOp::HypotRegReg(out, lhs, rhs) => {
                 f(*out);
                 f(*lhs);
                 f(*rhs);

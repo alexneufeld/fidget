@@ -96,6 +96,7 @@ pub enum BytecodeOp {
     Atan2,
     Compare,
     Mix,
+    Hypot,
     Mod,
     Min,
     Max,
@@ -149,6 +150,9 @@ impl From<RegOp> for BytecodeOp {
             RegOp::MixRegReg(..)
             | RegOp::MixRegImm(..)
             | RegOp::MixImmReg(..) => BytecodeOp::Mix,
+            RegOp::HypotRegReg(..)
+            | RegOp::HypotRegImm(..)
+            | RegOp::HypotImmReg(..) => BytecodeOp::Hypot,
             RegOp::ModRegReg(..)
             | RegOp::ModRegImm(..)
             | RegOp::ModImmReg(..) => BytecodeOp::Mod,
@@ -308,6 +312,7 @@ impl Bytecode {
                 | RegOp::MaxRegImm(out, reg, imm_f32)
                 | RegOp::CompareRegImm(out, reg, imm_f32)
                 | RegOp::MixRegImm(out, reg, imm_f32)
+                | RegOp::HypotRegImm(out, reg, imm_f32)
                 | RegOp::ModRegImm(out, reg, imm_f32)
                 | RegOp::AndRegImm(out, reg, imm_f32)
                 | RegOp::OrRegImm(out, reg, imm_f32) => {
@@ -322,6 +327,7 @@ impl Bytecode {
                 | RegOp::AtanImmReg(out, reg, imm_f32)
                 | RegOp::CompareImmReg(out, reg, imm_f32)
                 | RegOp::MixImmReg(out, reg, imm_f32)
+                | RegOp::HypotImmReg(out, reg, imm_f32)
                 | RegOp::ModImmReg(out, reg, imm_f32) => {
                     store_reg(1, out)?;
                     store_reg(3, reg)?;
@@ -338,6 +344,7 @@ impl Bytecode {
                 | RegOp::MaxRegReg(out, lhs, rhs)
                 | RegOp::CompareRegReg(out, lhs, rhs)
                 | RegOp::MixRegReg(out, lhs, rhs)
+                | RegOp::HypotRegReg(out, lhs, rhs)
                 | RegOp::ModRegReg(out, lhs, rhs)
                 | RegOp::AndRegReg(out, lhs, rhs)
                 | RegOp::OrRegReg(out, lhs, rhs) => {

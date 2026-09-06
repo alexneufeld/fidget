@@ -779,6 +779,32 @@ impl Context {
         self.or(lhs, rhs)
     }
 
+    /// Builds a ndoe that returns the length of the hypotenuse of a right
+    /// triangle, given that triangle's side lengths
+    ///
+    /// ```
+    /// # let mut ctx = fidget_core::context::Context::new();
+    /// let x = ctx.x();
+    /// let y = ctx.y();
+    ///
+    /// let hyp = ctx.hypot(x, y).unwrap();
+    ///
+    /// assert_eq!(ctx.eval_xyz(hyp, 3.0, 4.0, 0.0).unwrap(), 5.0);
+    /// ```
+    pub fn hypot<A: IntoNode, B: IntoNode>(
+        &mut self,
+        a: A,
+        b: B,
+    ) -> Result<Node, BadNode> {
+        let a = a.into_node(self)?;
+        let b = b.into_node(self)?;
+        if a == b {
+            Ok(a)
+        } else {
+            self.op_binary_commutative(a, b, BinaryOpcode::Hypot)
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     /// Evaluates the given node with the provided values for X, Y, and Z.
     ///
@@ -977,6 +1003,7 @@ impl Context {
                 BinaryOpcode::And => out += "and",
                 BinaryOpcode::Or => out += "or",
                 BinaryOpcode::Mix => out += "mix",
+                BinaryOpcode::Hypot => out += "hypot",
             },
             Op::Unary(op, ..) => match op {
                 UnaryOpcode::Neg => out += "neg",
@@ -1145,6 +1172,7 @@ impl Context {
                                 BinaryOpcode::Mod => self.modulo(lhs, rhs),
                                 BinaryOpcode::And => self.and(lhs, rhs),
                                 BinaryOpcode::Or => self.or(lhs, rhs),
+                                BinaryOpcode::Hypot => self.hypot(lhs, rhs),
                             }
                             .unwrap();
                             if Arc::strong_count(t) > 1 {
@@ -1476,6 +1504,15 @@ impl Context {
                                 self.if_nonzero_else(cond, d_lhs, d_rhs)
                             }
                             BinaryOpcode::Mix => Ok(zero),
+                            BinaryOpcode::Hypot => {
+                                let mut numerator = self.add(v_lhs, v_rhs).unwrap();
+                                numerator = self.mul(numerator, d_lhs).unwrap();
+                                numerator = self.mul(numerator, d_rhs).unwrap();
+                                let mut denominator = self.hypot(v_lhs, v_rhs).unwrap();
+                                denominator = self.recip(denominator).unwrap();
+                                self.div(numerator, denominator)
+
+                            }
                         }
                         .unwrap();
                         seen.insert(n, out);

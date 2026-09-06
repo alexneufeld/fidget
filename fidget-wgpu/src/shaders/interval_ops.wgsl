@@ -198,6 +198,27 @@ fn op_mix(lhs: Value, rhs: Value) -> Value {
     }
 }
 
+fn op_hypot(lhs: Value, rhs: Value) -> Value {
+    if has_nan(rhs) || has_nan(lhs) {
+        return nan_i();
+    } else {
+        let rhs_upper = max(abs(rhs.v[0]), abs(rhs.v[1]));
+        let lhs_upper = max(abs(lhs.v[0]), abs(lhs.v[1]));
+        var rhs_lower = 0.0;
+        if !contains_i(rhs, 0.0) {
+            rhs_lower = min(abs(rhs.v[0]), abs(rhs.v[1]));
+        }
+        var lhs_lower = 0.0;
+        if !contains_i(lhs, 0.0) {
+            rhs_lower = min(abs(lhs.v[0]), abs(lhs.v[1]));
+        }
+        return Value(vec2f(
+            length(vec2<f32>(lhs_lower, rhs_lower)),
+            length(vec2<f32>(lhs_upper, rhs_upper)),
+        ));
+    }
+}
+
 fn op_and(lhs: Value, rhs: Value, stack: ptr<function, Stack>) -> Value {
     if has_nan(lhs) || has_nan(rhs) {
         stack_push(stack, CHOICE_BOTH);

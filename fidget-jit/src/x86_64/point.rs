@@ -449,6 +449,12 @@ impl Assembler for PointAssembler {
             ; vmovq   Rx(reg(out_reg)), r8
         );
     }
+    fn build_hypot(&mut self, out_reg: u8, lhs_reg: u8, rhs_reg: u8) {
+        extern "sysv64" fn float_hypot(a: f32, b: f32) -> f32 {
+            a.hypot(b)
+        }
+        self.call_fn_binary(out_reg, lhs_reg, rhs_reg, float_hypot);
+    }
     fn load_imm(&mut self, imm: f32) -> u8 {
         let imm_u32 = imm.to_bits();
         dynasm!(self.0.ops

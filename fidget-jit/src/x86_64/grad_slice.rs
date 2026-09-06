@@ -490,6 +490,13 @@ impl Assembler for GradSliceAssembler {
         );
     }
 
+    fn build_hypot(&mut self, out_reg: u8, lhs_reg: u8, rhs_reg: u8) {
+        extern "sysv64" fn grad_hypot(lhs: Grad, rhs: Grad) -> Grad {
+            lhs.hypot(rhs)
+        }
+        self.call_fn_binary(out_reg, lhs_reg, rhs_reg, grad_hypot);
+    }
+
     fn build_compare(&mut self, out_reg: u8, lhs_reg: u8, rhs_reg: u8) {
         dynasm!(self.0.ops
             ; vcomiss Rx(reg(lhs_reg)), Rx(reg(rhs_reg))

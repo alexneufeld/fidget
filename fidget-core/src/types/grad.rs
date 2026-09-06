@@ -297,6 +297,18 @@ impl Grad {
             .into()
     }
 
+    /// Hypotenuse of a triangle
+    #[inline]
+    pub fn hypot(self, other: Self) -> Self {
+        let hyp = self.v.hypot(other.v);
+        Self {
+            v: hyp,
+            dx: (self.v*self.dx + other.v*other.dx)/hyp,
+            dy: (self.v*self.dy + other.v*other.dy)/hyp,
+            dz: (self.v*self.dz + other.v*other.dz)/hyp
+        }
+    }
+
     /// Checks that the two values are roughly equal, panicking otherwise
     #[cfg(any(test, feature = "eval-tests"))]
     pub(crate) fn compare_eq(&self, other: Self) {

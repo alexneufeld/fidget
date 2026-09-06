@@ -217,6 +217,7 @@ pub mod canonical {
     declare_canonical_binary!(Context::div, |a, b| a / b);
     declare_canonical_binary!(Context::min, |a, b| a.min_choice(b).0);
     declare_canonical_binary!(Context::max, |a, b| a.max_choice(b).0);
+    declare_canonical_binary!(Context::hypot, |a, b| a.hypot(b));
     declare_canonical_binary!(Context::compare, |a, b| a.compare(b), |a, b| a
         == b);
     declare_canonical_binary!(
@@ -304,5 +305,6 @@ macro_rules! all_binary_tests {
         $crate::one_binary_test!($tester, and);
         $crate::one_binary_test!($tester, or);
         $crate::one_binary_test!($tester, mix);
+        $crate::one_binary_test!($tester, hypot);
     };
 }

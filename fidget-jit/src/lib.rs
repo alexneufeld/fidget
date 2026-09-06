@@ -179,6 +179,9 @@ trait Assembler {
     /// Pseudo-random value mixing
     fn build_mix(&mut self, out_reg: u8, lhs_reg: u8, rhs_reg: u8);
 
+    /// Hypotenuse of a right triangle from it's side lengths
+    fn build_hypot(&mut self, out_reg: u8, lhs_reg: u8, rhs_reg: u8);
+
     /// Square
     ///
     /// This has a default implementation, but can be overloaded for efficiency;
@@ -859,6 +862,17 @@ fn build_asm_fn_with_storage<A: Assembler>(
             RegOp::MixImmReg(out, arg, imm) => {
                 let reg = asm.load_imm(imm);
                 asm.build_mix(out, reg, arg);
+            }
+            RegOp::HypotRegReg(out, lhs, rhs) => {
+                asm.build_hypot(out, lhs, rhs);
+            }
+            RegOp::HypotRegImm(out, arg, imm) => {
+                let reg = asm.load_imm(imm);
+                asm.build_hypot(out, arg, reg);
+            }
+            RegOp::HypotImmReg(out, arg, imm) => {
+                let reg = asm.load_imm(imm);
+                asm.build_hypot(out, reg, arg);
             }
         }
     }

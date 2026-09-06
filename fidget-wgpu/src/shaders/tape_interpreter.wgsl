@@ -79,6 +79,7 @@ fn run_tape(start: u32, xyz: array<Value, 3>, stack: ptr<function, Stack>) -> Ta
             case OP_ATAN2:   { tmp = op_atan2(lhs, rhs); }
             case OP_MOD:     { tmp = op_mod(lhs, rhs); }
             case OP_MIX:     { tmp = op_mix(lhs, rhs); }
+            case OP_HYPOT:   { tmp = op_hypot(lhs, rhs); }
 
             case OP_MIN:     { tmp = op_min(lhs, rhs, stack); }
             case OP_MAX:     { tmp = op_max(lhs, rhs, stack); }
